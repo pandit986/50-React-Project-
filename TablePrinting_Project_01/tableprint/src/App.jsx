@@ -1,6 +1,35 @@
+import { useState } from "react";
+import { TableGenerate } from "./components/TableGenerate";
+import toast, { Toaster } from "react-hot-toast";
+
 export default function App() {
+  const [row, setRow] = useState(0);
+  const [col, setCol] = useState(0);
+  const [toggle, setToggle] = useState(false);
+  const [order, setOrder] = useState(false);
+  const [data, setData] = useState([]);
+
+  const generateData = () => {
+    let data = [];
+    let count;
+    order ? (count = row * col) : (count = 1);
+    for (let i = 0; i < row; i++) {
+      let rows = [];
+      for (let j = 0; j < col; j++) {
+        rows.push(order ? count-- : count++);
+      }
+      data.push(rows);
+    }
+    setData(data);
+  };
+
+  function togglerHandler() {
+    setToggle((prev) => !prev);
+    generateData();
+  }
   return (
     <>
+      <Toaster position="top-right" reverseOrder={false} />
       <div className="flex flex-col items-center  h-screen w-full">
         <div className="w-[70%] mx-auto border ">
           {/* Row And Column Div */}
@@ -15,6 +44,11 @@ export default function App() {
               <input
                 type="number"
                 id="large-input"
+                onChange={(e) => {
+                  e.target.value <= 20
+                    ? setRow(e.target.value)
+                    : toast.error("Enter Number Less Than 20");
+                }}
                 className="block py-4 justify-center border-cyan-700 border-2 font-extrabold text-2xl bg-gray-300 cursor-auto w-24"
               />
             </div>
@@ -28,6 +62,11 @@ export default function App() {
               <input
                 type="number"
                 id="large-input"
+                onChange={(e) => {
+                  e.target.value <= 20
+                    ? setCol(e.target.value)
+                    : toast.error("Enter Number Less Than 20");
+                }}
                 className="block py-4 justify-center border-cyan-700 border-2 font-extrabold text-2xl bg-gray-300 cursor-auto w-24"
               />
             </div>
@@ -41,6 +80,8 @@ export default function App() {
                 type="radio"
                 value=""
                 name="default-radio"
+                checked={order === false}
+                onChange={() => setOrder((prev) => !prev)}
                 className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
               />
               <label
@@ -55,6 +96,8 @@ export default function App() {
                 id="default-radio-1"
                 type="radio"
                 value=""
+                checked={order === true}
+                onChange={() => setOrder((prev) => !prev)}
                 name="default-radio"
                 className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
               />
@@ -67,13 +110,14 @@ export default function App() {
             </div>
             <button
               type="button"
+              onClick={togglerHandler}
               className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-semibold rounded-lg text-lg px-5 py-4  dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
             >
               Process
             </button>
           </div>
           {/* Table Printing Div */}
-          <div className=""></div>
+          {toggle && <TableGenerate data={data}></TableGenerate>}
         </div>
       </div>
     </>

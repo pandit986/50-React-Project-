@@ -13,7 +13,9 @@ const Joke = () => {
   const fetchJoke = async () => {
     setLoading(true);
     try {
-      const response = await fetch("/api/jokes");
+      const response = await fetch(
+        "https://random-jock-backend.onrender.com/api/jokes"
+      );
       if (response.ok) {
         const data = await response.json();
         setJoke(data.data);
